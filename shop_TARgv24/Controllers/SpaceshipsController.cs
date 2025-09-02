@@ -6,11 +6,12 @@ namespace shop_TARgv24.Controllers
     {
         private readonly ShopTARgv24Context _context;
 
-        public SpaceshipsController(
-
+        public SpaceshipsController (
+                ShopTARgv24Context context
             )
         {
             _context = context;
+        }
         public IActionResult Index()
         {
             var result = _context.
