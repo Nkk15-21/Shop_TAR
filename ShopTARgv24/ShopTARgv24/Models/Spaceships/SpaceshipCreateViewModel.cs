@@ -10,6 +10,7 @@
         public int? EnginePower { get; set; }
         public int? Passengers { get; set; }
         public int? InnerVolume { get; set; }
+
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

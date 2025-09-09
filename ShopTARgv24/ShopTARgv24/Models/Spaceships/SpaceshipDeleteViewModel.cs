@@ -1,6 +1,6 @@
-﻿namespace ShopTARgv24.Core.Dto
+﻿namespace ShopTARgv24.Models.Spaceships
 {
-    public class SpaceshipDto
+    public class SpaceshipDeleteViewModel
     {
         public Guid? Id { get; set; }
         public string? Name { get; set; }

@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
@@ -12,16 +11,16 @@ namespace ShopTARgv24.Controllers
     public class SpaceshipsController : Controller
     {
         private readonly ShopTARgv24Context _context;
-        private readonly IspaceshipsServices _spaceshipServices;
+        private readonly ISpaceshipsServices _spaceshipsServices;
 
         public SpaceshipsController
             (
                 ShopTARgv24Context context,
-                IspaceshipsServices _spaceshipServices
-
+                ISpaceshipsServices spaceshipsServices
             )
         {
             _context = context;
+            _spaceshipsServices = spaceshipsServices;
         }
 
         public IActionResult Index()
@@ -40,11 +39,11 @@ namespace ShopTARgv24.Controllers
         }
 
         [HttpGet]
-        public  IActionResult Create()
+        public IActionResult Create()
         {
             SpaceshipCreateViewModel result = new();
 
-            return View( "Create", result);
+            return View("Create", result);
         }
 
         [HttpPost]
@@ -58,20 +57,46 @@ namespace ShopTARgv24.Controllers
                 BuiltDate = vm.BuiltDate,
                 Crew = vm.Crew,
                 EnginePower = vm.EnginePower,
+                Passengers = vm.Passengers,
                 InnerVolume = vm.InnerVolume,
                 CreatedAt = vm.CreatedAt,
-                ModifiedAt = vm.ModifiedAt,
-
+                ModifiedAt = vm.ModifiedAt
             };
 
-            var result = await _spaceshipServices.Create( dto );
+            var result = await _spaceshipsServices.Create(dto);
 
-            if ( result == null )
+            if (result == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var spaceship = await _spaceshipsServices.DetailAsync(id);
+
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new SpaceshipDeleteViewModel();
+
+            vm.Id = spaceship.Id;
+            vm.Name = spaceship.Name;
+            vm.TypeName = spaceship.TypeName;
+            vm.BuiltDate = spaceship.BuiltDate;
+            vm.Crew = spaceship.Crew;
+            vm.EnginePower = spaceship.EnginePower;
+            vm.Passengers = spaceship.Passengers;
+            vm.InnerVolume = spaceship.InnerVolume;
+            vm.CreatedAt = spaceship.CreatedAt;
+            vm.ModifiedAt = spaceship.ModifiedAt;
+
+            return View(vm);
         }
     }
 }

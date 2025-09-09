@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using ShopTARgv24.ApplicationServices.Services;
+using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
 
 namespace ShopTARgv24
@@ -9,13 +11,13 @@ namespace ShopTARgv24
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //builder.Services.AddScoped< SpaceshipServices>();
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
 
             builder.Services.AddDbContext<ShopTARgv24Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
