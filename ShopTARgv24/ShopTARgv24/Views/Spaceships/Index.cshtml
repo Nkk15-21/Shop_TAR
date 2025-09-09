@@ -32,6 +32,7 @@
                     <td>@spaceships.BuiltDate</td>
                     <td>@spaceships.Crew</td>
                     <td>
+                        <input asp-action="update" asp-controller="spaceships" type="submit" class="btn btn-primary" value="Update" />
                         <a asp-action="delete" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-danger">Delete</a>
                     </td>
                 </tr>
