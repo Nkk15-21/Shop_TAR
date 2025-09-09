@@ -1,1 +1,2 @@
-# Shop_TAR
+# ShopTARgv24
+Programmeerimine C#

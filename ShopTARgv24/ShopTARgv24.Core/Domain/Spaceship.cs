@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ShopTARgv24.Core.Domain
+﻿namespace ShopTARgv24.Core.Domain
 {
     public class Spaceship
     {
@@ -18,8 +12,6 @@ namespace ShopTARgv24.Core.Domain
         public int? InnerVolume { get; set; }
 
         public DateTime? CreatedAt { get; set; }
-        public DateTime? ModifiedAt { get;set; }
-
-
+        public DateTime? ModifiedAt { get; set; }
     }
 }

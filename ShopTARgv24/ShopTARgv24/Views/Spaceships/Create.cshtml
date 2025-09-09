@@ -1,0 +1,60 @@
+﻿@model ShopTARgv24.Models.Spaceships.SpaceshipCreateViewModel
+
+<h1>Create</h1>
+
+<div>
+	<form action="post" enctype="multipart/form-data">
+		<input asp-form="Id" type="hidden"/>	
+		<input asp-form="CreatedAt" type="hidden" />
+		<input asp-form="ModifiedAt" type="hidden" />
+		
+		<div class="form-group row">
+			<label asp-for="Name" class="col-sm-2 col-form-label"></label>
+			<div class ="col-sm-10">
+				<input asp-for`="Name" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="TypeName" class="col-sm-2 col-form-label"></label>
+			<div class="col-sm-10">
+				<input asp-for`="TypeName" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="BuiltDate" class="col-sm-2 col-form-label"></label>
+			<div class="col-sm-10">
+				<input asp-for`="BuiltDate" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="Crew" class="col-sm-2 col-form-label"></label>
+			<div class="col-sm-10">
+				<input asp-for`="Crew" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="EnginePower" class="col-sm-2 col-form-label"></label>
+			<div class="col-sm-10">
+				<input asp-for`="EnginePower" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="Passengers" class="col-sm-2 col-form-label"></label>
+			<div class="col-sm-10">
+				<input asp-for`="Passengers" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="InnerVolume" class="col-sm-2 col-form-label"></label>
+			<div class="col-sm-10">
+				<input asp-for`="InnerVolume" class="form-control" />
+			</div>
+		</div>
+	</form>
+</div>

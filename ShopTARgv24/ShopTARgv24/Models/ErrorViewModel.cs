@@ -1,4 +1,4 @@
-namespace shop_TARgv24.Models
+namespace ShopTARgv24.Models
 {
     public class ErrorViewModel
     {
