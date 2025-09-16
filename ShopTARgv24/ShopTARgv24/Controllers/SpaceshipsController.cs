@@ -104,7 +104,7 @@ namespace ShopTARgv24.Controllers
         {
             var spaceship = await _spaceshipsServices.Delete(id);
 
-            if (spaceship != null)
+            if (spaceship == null)
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -113,14 +113,15 @@ namespace ShopTARgv24.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Update(Guid id)
+        public async Task <IActionResult> Update(Guid id)
         {
             var spaceship = await _spaceshipsServices.DetailAsync(id);
 
-            if (spaceship != null)
+            if (spaceship == null)
             {
                 return NotFound();
             }
+
             var vm = new SpaceshipCreateUpdateViewModel();
 
             vm.Id = spaceship.Id;
@@ -134,8 +135,34 @@ namespace ShopTARgv24.Controllers
             vm.CreatedAt = spaceship.CreatedAt;
             vm.ModifiedAt = spaceship.ModifiedAt;
 
-            return View("CreateUpdate", vm );
+            return View("CreateUpdate", vm);
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Update(SpaceshipCreateUpdateViewModel vm)
+        {
+            var dto = new SpaceshipDto()
+            {
+                Id = vm.Id,
+                Name = vm.Name,
+                TypeName = vm.TypeName,
+                BuiltDate = vm.BuiltDate,
+                Crew = vm.Crew,
+                EnginePower = vm.EnginePower,
+                Passengers = vm.Passengers,
+                InnerVolume = vm.InnerVolume,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt
+            };
+
+            var result = await _spaceshipsServices.Update(dto);
+
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index), vm);
         }
 
         [HttpGet]
@@ -148,23 +175,20 @@ namespace ShopTARgv24.Controllers
                 return NotFound();
             }
 
-            var vm = new SpaceshipDetailsViewModel
-            {
-                Id = spaceship.Id,
-                Name = spaceship.Name,
-                TypeName = spaceship.TypeName,
-                BuiltDate = spaceship.BuiltDate ?? DateTime.MinValue,
-                Crew = spaceship.Crew ?? 0,
-                EnginePower = spaceship.EnginePower ?? 0,
-                Passengers = spaceship.Passengers ?? 0,
-                InnerVolume = spaceship.InnerVolume ?? 0,
-                CreatedAt = spaceship.CreatedAt ?? DateTime.MinValue,
-                ModifiedAt = spaceship.ModifiedAt ?? DateTime.MinValue
-            };
+            var vm = new SpaceshipDetailsViewModel();
+
+            vm.Id = spaceship.Id;
+            vm.Name = spaceship.Name;
+            vm.TypeName = spaceship.TypeName;
+            vm.BuiltDate = spaceship.BuiltDate;
+            vm.Crew = spaceship.Crew;
+            vm.EnginePower = spaceship.EnginePower;
+            vm.Passengers = spaceship.Passengers;
+            vm.InnerVolume = spaceship.InnerVolume;
+            vm.CreatedAt = spaceship.CreatedAt;
+            vm.ModifiedAt = spaceship.ModifiedAt;
 
             return View(vm);
         }
-
-
     }
 }

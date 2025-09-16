@@ -74,10 +74,10 @@ namespace ShopTARgv24.ApplicationServices.Services
             domain.CreatedAt = dto.CreatedAt;
             domain.ModifiedAt = DateTime.Now;
 
-            _context.Spaceships.Add(domain);
+            _context.Spaceships.Update(domain);
             await _context.SaveChangesAsync();
+
             return domain;
         }
-
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace ShopTARgv24.Core.Domain
+﻿namespace ShopTARgv24.Core.Dto
 {
-    public class FileToApi
+    public class FileToApiDto
     {
         public Guid Id { get; set; }
         public string? ExistingFilePath { get; set; }
