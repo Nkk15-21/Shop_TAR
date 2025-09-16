@@ -137,5 +137,34 @@ namespace ShopTARgv24.Controllers
             return View("CreateUpdate", vm );
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var spaceship = await _spaceshipsServices.DetailAsync(id);
+
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new SpaceshipDetailsViewModel
+            {
+                Id = spaceship.Id,
+                Name = spaceship.Name,
+                TypeName = spaceship.TypeName,
+                BuiltDate = spaceship.BuiltDate ?? DateTime.MinValue,
+                Crew = spaceship.Crew ?? 0,
+                EnginePower = spaceship.EnginePower ?? 0,
+                Passengers = spaceship.Passengers ?? 0,
+                InnerVolume = spaceship.InnerVolume ?? 0,
+                CreatedAt = spaceship.CreatedAt ?? DateTime.MinValue,
+                ModifiedAt = spaceship.ModifiedAt ?? DateTime.MinValue
+            };
+
+            return View(vm);
+        }
+
+
     }
 }

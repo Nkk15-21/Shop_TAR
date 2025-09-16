@@ -1,0 +1,44 @@
+﻿@model ShopTARgv24.Models.Spaceships.SpaceshipDetailsViewModel
+
+<h1>Spaceship Details</h1>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Type</th>
+        <td>@Model.TypeName</td>
+    </tr>
+    <tr>
+        <th>Built Date</th>
+        <td>@(Model.BuiltDate?.ToShortDateString() ?? "-")</td>
+    </tr>
+    <tr>
+        <th>Crew</th>
+        <td>@Model.Crew</td>
+    </tr>
+    <tr>
+        <th>Engine Power</th>
+        <td>@Model.EnginePower</td>
+    </tr>
+    <tr>
+        <th>Passengers</th>
+        <td>@Model.Passengers</td>
+    </tr>
+    <tr>
+        <th>Inner Volume</th>
+        <td>@Model.InnerVolume</td>
+    </tr>
+    <tr>
+        <th>Created At</th>
+        <td>@(Model.CreatedAt?.ToString("g") ?? "-")</td>
+    </tr>
+    <tr>
+        <th>Modified At</th>
+        <td>@(Model.ModifiedAt?.ToString("g") ?? "-")</td>
+    </tr>
+</table>
+
+<a asp-action="Index" class="btn btn-primary">Back to List</a>
