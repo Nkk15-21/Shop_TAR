@@ -12,6 +12,5 @@ namespace ShopTARgv24.Core.Domain
         public string? ExistingFilePath { get; set; }
         public Guid? SpaceshipId { get; set; }
 
-
     }
 }
