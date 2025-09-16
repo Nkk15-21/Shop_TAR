@@ -33,6 +33,7 @@ namespace ShopTARgv24.ApplicationServices.Services
             spaceship.InnerVolume = dto.InnerVolume;
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
+            _fileServices.FilesToApi(dto, spaceship);
 
             await _context.Spaceships.AddAsync(spaceship);
             await _context.SaveChangesAsync();
