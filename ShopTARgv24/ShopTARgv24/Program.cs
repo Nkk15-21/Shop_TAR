@@ -33,6 +33,8 @@ namespace ShopTARgv24
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseStaticFiles();
+
 
             app.MapStaticAssets();
             app.MapControllerRoute(
