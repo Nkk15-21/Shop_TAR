@@ -10,10 +10,12 @@ namespace ShopTARgv24.ApplicationServices.Services
     public class SpaceshipsServices : ISpaceshipsServices
     {
         private readonly ShopTARgv24Context _context;
+        private readonly IFileServices fileServices;
 
         public SpaceshipsServices
             (
                 ShopTARgv24Context context
+                IFileServices fileServices
             )
         {
             _context = context;
