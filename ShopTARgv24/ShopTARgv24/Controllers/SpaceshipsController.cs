@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
@@ -182,6 +183,14 @@ namespace ShopTARgv24.Controllers
             {
                 return NotFound();
             }
+
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new ImageViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id,
+                }).ToArrayAsync();
 
             var vm = new SpaceshipDetailsViewModel();
 
