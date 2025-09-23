@@ -10,15 +10,16 @@ namespace ShopTARgv24.ApplicationServices.Services
     public class SpaceshipsServices : ISpaceshipsServices
     {
         private readonly ShopTARgv24Context _context;
-        private readonly IFileServices fileServices;
+        private readonly IFileServices _fileServices;
 
         public SpaceshipsServices
             (
-                ShopTARgv24Context context
+                ShopTARgv24Context context,
                 IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
 
         public async Task<Spaceship> Create(SpaceshipDto dto)
