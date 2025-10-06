@@ -54,5 +54,10 @@ namespace ShopTARgv24.ApplicationServices.Services
                 }
             }
         }
+
+        public void UploadFilesToDatabase(RealEstateDto dto, RealEstate domain)
+        {
+
+        }
     }
 }
