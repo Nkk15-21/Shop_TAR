@@ -57,7 +57,13 @@ namespace ShopTARgv24.ApplicationServices.Services
 
         public void UploadFilesToDatabase(RealEstateDto dto, RealEstate domain)
         {
+            if(dto.Files != null && dto.Files.Count > 0)
+            {
+                foreach(var file in dto.Files)
+                {
 
+                }
+            }
         }
     }
 }
