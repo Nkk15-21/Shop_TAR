@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using ShopTARgv24.Core.Domain;
+﻿using ShopTARgv24.Core.Domain;
+using ShopTARgv24.Core.Dto;
 
-namespace ShopTARgv24.Core.Dto
+namespace ShopTARgv24.Models.RealEstate
 {
-    public class RealEstateDto
+    public class RealEstateCreateUpdateViewModel
     {
         public Guid? Id { get; set; }
         public double? Area { get; set; }
