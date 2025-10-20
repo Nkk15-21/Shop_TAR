@@ -47,6 +47,13 @@ namespace ShopTARgv24
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            // авто-миграция при старте приложения
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ShopTARgv24Context>();
+                db.Database.Migrate(); // создаст БД и применит все миграции
+            }
+
             app.Run();
         }
     }
