@@ -7,6 +7,7 @@ using ShopTARgv24.Models.Spaceships;
 using Microsoft.EntityFrameworkCore;
 
 
+
 namespace ShopTARgv24.Controllers
 {
     public class SpaceshipsController : Controller
@@ -169,24 +170,31 @@ namespace ShopTARgv24.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            
-            var domain = await _spaceshipsServices.DetailAsync(id); 
 
-            if (domain == null)
-                return NotFound();
+            var s = await _spaceshipsServices.DetailAsync(id);
+            if (s == null) return NotFound();
 
-            // вытягиваем список имён файлов из таблицы FileToApis
             var imageNames = await _context.FileToApis
                 .Where(x => x.SpaceshipId == id)
                 .Select(x => x.ExistingFilePath)
                 .ToListAsync();
 
+
             var vm = new SpaceshipDetailsViewModel
             {
-                Id = domain.Id,
-                // заполни остальные поля из domain -> vm...
-                Images = imageNames  
+                Id = s.Id,                          
+                Name = s.Name,
+                TypeName = s.TypeName,             
+                BuiltDate = s.BuiltDate,            
+                Crew = s.Crew,
+                Passengers = s.Passengers,
+                InnerVolume = s.InnerVolume,
+                EnginePower = s.EnginePower,  
+                CreatedAt = s.CreatedAt,
+                ModifiedAt = s.ModifiedAt,
+                Images = imageNames
             };
+
 
             return View(vm);
         }
