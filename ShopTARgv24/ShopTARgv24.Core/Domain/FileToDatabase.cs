@@ -8,9 +8,13 @@ namespace ShopTARgv24.Core.Domain
 {
     public class FileToDatabase
     {
-        public Guid Id { get; set; }
-        public string? ImageTitle { get; set; }
-        public byte[]? ImageDate { get; set; }
-        public Guid? RealEstateId { get; set; }
+        public int Id { get; set; }
+
+        public string? Name { get; set; }
+        public string? ContentType { get; set; }
+
+        public byte[] ImageData { get; set; } = Array.Empty<byte>();
+
+        public DateTime UploadedAtUtc { get; set; } = DateTime.UtcNow;
     }
 }

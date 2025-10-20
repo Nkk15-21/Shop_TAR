@@ -1,4 +1,6 @@
-﻿namespace ShopTARgv24.Models.Spaceships
+﻿using System.Collections.Generic;
+
+namespace ShopTARgv24.Models.Spaceships
 {
     public class SpaceshipDetailsViewModel
     {
@@ -10,7 +12,7 @@
         public int? EnginePower { get; set; }
         public int? Passengers { get; set; }
         public int? InnerVolume { get; set; }
-
+        public List<string> Images { get; set; } = new();
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

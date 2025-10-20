@@ -4,6 +4,7 @@ using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
 using ShopTARgv24.Models.Spaceships;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ShopTARgv24.Controllers
@@ -168,26 +169,24 @@ namespace ShopTARgv24.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            var spaceship = await _spaceshipsServices.DetailAsync(id);
+            
+            var domain = await _spaceshipsServices.DetailAsync(id); 
 
-            if (spaceship == null)
-            {
+            if (domain == null)
                 return NotFound();
-            }
 
-            var vm = new SpaceshipDetailsViewModel();
+            // вытягиваем список имён файлов из таблицы FileToApis
+            var imageNames = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(x => x.ExistingFilePath)
+                .ToListAsync();
 
-            vm.Id = spaceship.Id;
-            vm.Name = spaceship.Name;
-            vm.TypeName = spaceship.TypeName;
-            vm.BuiltDate = spaceship.BuiltDate;
-            vm.Crew = spaceship.Crew;
-            vm.EnginePower = spaceship.EnginePower;
-            vm.Passengers = spaceship.Passengers;
-            vm.InnerVolume = spaceship.InnerVolume;
-            vm.CreatedAt = spaceship.CreatedAt;
-            vm.ModifiedAt = spaceship.ModifiedAt;
-            vm.Image.AddRange(images);
+            var vm = new SpaceshipDetailsViewModel
+            {
+                Id = domain.Id,
+                // заполни остальные поля из domain -> vm...
+                Images = imageNames  
+            };
 
             return View(vm);
         }

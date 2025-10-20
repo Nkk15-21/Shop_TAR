@@ -27,7 +27,7 @@ namespace ShopTARgv24.Controllers
         }
         public IActionResult Index()
         {
-            var result = _context.RealEstate
+            var result = _context.RealEstates
                 .Select(x => new RealEstateIndexViewModel
                 {
                     Id = x.Id,

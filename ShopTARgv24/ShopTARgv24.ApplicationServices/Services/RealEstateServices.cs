@@ -11,11 +11,9 @@ namespace ShopTARgv24.ApplicationServices.Services
         private readonly ShopTARgv24Context _context;
         private readonly IFileServices _fileServices;
 
-        public RealEstateServices
-            (
-                ShopTARgv24Context context,
-                IFileServices fileServices
-            )
+        public RealEstateServices(
+            ShopTARgv24Context context,
+            IFileServices fileServices)
         {
             _context = context;
             _fileServices = fileServices;
@@ -23,60 +21,68 @@ namespace ShopTARgv24.ApplicationServices.Services
 
         public async Task<RealEstate> Create(RealEstateDto dto)
         {
-            RealEstate domain = new RealEstate();
-
-            domain.Id = Guid.NewGuid();
-            domain.Area = dto.Area;
-            domain.Location = dto.Location;
-            domain.RoomNumber = dto.RoomNumber;
-            domain.BuildingType = dto.BuildingType;
-            domain.CreatedAt = DateTime.Now;
-            domain.ModifiedAt = DateTime.Now;
-
-            //peaks kontrollima, kas on faile või ei ole
-            if (dto.Files != null)
+            var domain = new RealEstate
             {
-                _fileServices.UploadFilesToDatabase(dto, domain);
-            }
+                Id = Guid.NewGuid(),
+                Area = dto.Area,
+                Location = dto.Location,
+                RoomNumber = dto.RoomNumber,
+                BuildingType = dto.BuildingType,
+                CreatedAt = DateTime.Now,
+                ModifiedAt = DateTime.Now
+            };
 
-            await _context.RealEstate.AddAsync(domain);
+            // файлы в БД (если есть)
+            if (dto.Files != null && dto.Files.Count > 0)
+                _fileServices.UploadFilesToDatabase(dto, domain);
+
+            await _context.RealEstates.AddAsync(domain);
             await _context.SaveChangesAsync();
 
             return domain;
         }
 
-        public async Task<RealEstate> DetailAsync(Guid id)
+        public async Task<RealEstate?> DetailAsync(Guid id)
         {
-            var result = await _context.RealEstate
-            .FirstOrDefaultAsync(x => x.Id == id);
-
-            return result;
+            // при желании можно добавить Include к изображениям
+            return await _context.RealEstates
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
+
         public async Task<RealEstate> Update(RealEstateDto dto)
         {
-            RealEstate domain = new();
+            // обновляем существующую запись (а не создаём новую «пустую»)
+            var domain = await _context.RealEstates
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
-            domain.Id = dto.Id;
+            if (domain == null)
+                return null!; // или брось исключение, если по контракту не допускается null
+
             domain.Area = dto.Area;
             domain.Location = dto.Location;
             domain.RoomNumber = dto.RoomNumber;
             domain.BuildingType = dto.BuildingType;
             domain.CreatedAt = dto.CreatedAt;
             domain.ModifiedAt = DateTime.Now;
-            _fileServices.UploadFilesToDatabase(dto, domain);
 
-            _context.RealEstate.Update(domain);
+            if (dto.Files != null && dto.Files.Count > 0)
+                _fileServices.UploadFilesToDatabase(dto, domain);
+
+            _context.RealEstates.Update(domain);
             await _context.SaveChangesAsync();
 
             return domain;
         }
 
-        public async Task<RealEstate> Delete(Guid id)
+        public async Task<RealEstate?> Delete(Guid id)
         {
-            var realestate = await _context.RealEstate
+            var realestate = await _context.RealEstates
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            _context.RealEstate.Remove(realestate);
+            if (realestate == null)
+                return null;
+
+            _context.RealEstates.Remove(realestate);
             await _context.SaveChangesAsync();
 
             return realestate;

@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using ShopTARgv24.Core.Domain;
 using ShopTARgv24.Core.Dto;
@@ -12,112 +16,107 @@ namespace ShopTARgv24.ApplicationServices.Services
         private readonly ShopTARgv24Context _context;
         private readonly IHostEnvironment _webHost;
 
-        public FileServices
-            (
-                ShopTARgv24Context context,
-                IHostEnvironment webHost
-            )
+        public FileServices(ShopTARgv24Context context, IHostEnvironment webHost)
         {
             _context = context;
             _webHost = webHost;
         }
+
+        // ====== 1) Сохранение файлов на диск + запись путей в FileToApis ======
         public void FilesToApi(SpaceshipDto dto, Spaceship spaceship)
         {
-            if (dto.Files != null && dto.Files.Count > 0)
+            if (dto?.Files == null || dto.Files.Count == 0)
+                return;
+
+            var uploadsFolder = Path.Combine(_webHost.ContentRootPath, "wwwroot", "multipleFileUpload");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            foreach (var file in dto.Files)
             {
-                if (!Directory.Exists(_webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"))
+                var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fs = new FileStream(filePath, FileMode.Create))
                 {
-                    Directory.CreateDirectory(_webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\");
+                    file.CopyTo(fs);
                 }
 
-                foreach (var file in dto.Files)
+                var path = new FileToApi
                 {
-                    //muutuja string uploadsFolder ja sinna laetakse failid
-                    string uploadsFolder = Path.Combine(_webHost.ContentRootPath, "wwwroot", "multipleFileUpload");
-                    //muutuja string uniqueFileName ja siin genereeritakse uus Guid ja lisatakse see faili ette
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-                    //muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    // НЕ присваиваем Guid в int-Id! Предполагаем, что Id у FileToApi = Guid.
+                    Id = Guid.NewGuid(),
+                    ExistingFilePath = uniqueFileName,
+                    SpaceshipId = spaceship.Id
+                };
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-
-                        FileToApi path = new FileToApi
-                        {
-                            Id = Guid.NewGuid(),
-                            ExistingFilePath = uniqueFileName,
-                            SpaceshipId = spaceship.Id
-                        };
-
-                        _context.FileToApis.AddAsync(path);
-                    }
-                }
+                _context.FileToApis.Add(path);
             }
+
+            _context.SaveChanges();
         }
 
         public async Task<FileToApi> RemoveImageFromApi(FileToApiDto dto)
         {
-            var imageId = await _context.FileToApis.FirstOrDefaultAsync(x => x.Id == dto.Id);
-            var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\" + imageId.ExistingFilePath;
+            var entity = await _context.FileToApis.FirstOrDefaultAsync(x => x.Id == dto.Id);
+            if (entity == null) return null;
 
-            if(File.Exists(filePath))
-            {
+            var filePath = Path.Combine(_webHost.ContentRootPath, "wwwroot", "multipleFileUpload", entity.ExistingFilePath);
+            if (File.Exists(filePath))
                 File.Delete(filePath);
-            }
 
-            _context.FileToApis.Remove(imageId);
+            _context.FileToApis.Remove(entity);
             await _context.SaveChangesAsync();
-
-            return imageId;
+            return entity;
         }
 
         public async Task<List<FileToApi>> RemoveImagesFromApi(FileToApiDto[] dtos)
         {
+            var removed = new List<FileToApi>();
+            if (dtos == null || dtos.Length == 0) return removed;
+
             foreach (var dto in dtos)
             {
-                var imageId = await _context.FileToApis.FirstOrDefaultAsync(x => x.Id == dto.Id);
-                var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\" + imageId.ExistingFilePath;
+                var entity = await _context.FileToApis.FirstOrDefaultAsync(x => x.Id == dto.Id);
+                if (entity == null) continue;
 
+                var filePath = Path.Combine(_webHost.ContentRootPath, "wwwroot", "multipleFileUpload", entity.ExistingFilePath);
                 if (File.Exists(filePath))
-                {
                     File.Delete(filePath);
-                }
 
-                _context.FileToApis.Remove(imageId);
-                await _context.SaveChangesAsync();
+                _context.FileToApis.Remove(entity);
+                removed.Add(entity);
             }
-            return null;
+
+            await _context.SaveChangesAsync();
+            return removed;
         }
 
-
-        // Meetod, mis salvestab failid andmebaasi
+        // ====== 2) Сохранение файлов в БД (таблица FileToDatabases) ======
         public void UploadFilesToDatabase(RealEstateDto dto, RealEstate domain)
         {
-            // tuleb ära kontrollida, kas on üks fail või mitu faili
-            if (dto.Files != null && dto.Files.Count > 0)
+            if (dto?.Files == null || dto.Files.Count == 0)
+                return;
+
+            foreach (var file in dto.Files)
             {
-                //kui tuleb mitu faili, siis igaks juhuks tuleb kasutada foreachi
-                foreach (var file in dto.Files)
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+
+                var entity = new FileToDatabase
                 {
-                    // foreachi sees kasutada using-t ja ära mappшвф
-                    using (var target = new MemoryStream())
-                    {
-                        FileToDatabase files = new FileToDatabase
-                        {
-                            Id = Guid.NewGuid(),
-                            ImageTitle = file.FileName,
-                            ImageData = target.ToArray(),
-                            RealEstateId = domain.Id
-                        };
-                        // salvesta andmed andmebaasi
-                        file.CopyTo(target);
-                        files.ImageData = target.ToArray();
-                            
-                        _context.FileToDatabase.Add(files);
-                    }
-                }
+                    // ВАЖНО: НЕ задаём Id, если он int (авто-инкремент)
+                    // Если в модели есть свойство Name/ContentType — заполняем:
+                    Name = file.FileName,
+                    // ContentType = file.ContentType, // раскомментируй, если поле есть в модели
+                    ImageData = ms.ToArray()
+                    // Не ставим RealEstateId, если такого свойства нет в модели
+                };
+
+                _context.FileToDatabases.Add(entity);
             }
+
+            _context.SaveChanges();
         }
     }
 }
