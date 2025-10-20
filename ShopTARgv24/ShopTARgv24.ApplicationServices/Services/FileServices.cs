@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using ShopTARgv24.Core.Domain;
 using ShopTARgv24.Core.Dto;
@@ -62,7 +61,7 @@ namespace ShopTARgv24.ApplicationServices.Services
             var imageId = await _context.FileToApis.FirstOrDefaultAsync(x => x.Id == dto.Id);
             var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\" + imageId.ExistingFilePath;
 
-            if (File.Exists(filePath))
+            if(File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
@@ -114,8 +113,8 @@ namespace ShopTARgv24.ApplicationServices.Services
                         // salvesta andmed andmebaasi
                         file.CopyTo(target);
                         files.ImageData = target.ToArray();
-
-                        _context.FileToDatabases.Add(files);
+                            
+                        _context.FileToDatabase.Add(files);
                     }
                 }
             }
