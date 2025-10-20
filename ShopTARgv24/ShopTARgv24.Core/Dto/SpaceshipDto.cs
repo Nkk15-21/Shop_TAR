@@ -9,9 +9,9 @@ namespace ShopTARgv24.Core.Dto
         public string? TypeName { get; set; }
         public DateTime? BuiltDate { get; set; }
         public int? Crew { get; set; }
-        public int? EnginePower { get; set; }
         public int? Passengers { get; set; }
-        public int? InnerVolume { get; set; }
+        public decimal? InnerVolume { get; set; }  
+        public int? EnginePower { get; set; } 
 
         //Tuleb teha muutuja Files ja see peab olema listis
         public List<IFormFile> Files { get; set; }
