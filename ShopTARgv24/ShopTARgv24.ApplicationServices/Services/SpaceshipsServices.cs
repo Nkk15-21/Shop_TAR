@@ -4,6 +4,7 @@ using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
 
+
 namespace ShopTARgv24.ApplicationServices.Services
 {
     public class SpaceshipsServices : ISpaceshipsServices
@@ -25,7 +26,7 @@ namespace ShopTARgv24.ApplicationServices.Services
         {
             Spaceship spaceship = new Spaceship();
 
-            spaceship.Id = Guid.NewGuid(); // Generate a new GUID for the spaceship
+            spaceship.Id = Guid.NewGuid();
             spaceship.Name = dto.Name;
             spaceship.TypeName = dto.TypeName;
             spaceship.BuiltDate = dto.BuiltDate;
@@ -39,13 +40,14 @@ namespace ShopTARgv24.ApplicationServices.Services
 
             await _context.Spaceships.AddAsync(spaceship);
             await _context.SaveChangesAsync();
-                
+
             return spaceship;
         }
+
         public async Task<Spaceship> DetailAsync(Guid id)
         {
             var result = await _context.Spaceships
-            .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             return result;
         }
@@ -65,9 +67,7 @@ namespace ShopTARgv24.ApplicationServices.Services
                 }).ToArrayAsync();
 
             await _fileServices.RemoveImagesFromApi(images);
-
             _context.Spaceships.Remove(spaceship);
-
             await _context.SaveChangesAsync();
 
             return spaceship;

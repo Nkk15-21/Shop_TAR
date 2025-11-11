@@ -4,6 +4,7 @@ using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
 
+
 namespace ShopTARgv24.ApplicationServices.Services
 {
     public class RealEstateServices : IRealEstateServices
@@ -11,9 +12,11 @@ namespace ShopTARgv24.ApplicationServices.Services
         private readonly ShopTARgv24Context _context;
         private readonly IFileServices _fileServices;
 
-        public RealEstateServices(
-            ShopTARgv24Context context,
-            IFileServices fileServices)
+        public RealEstateServices
+            (
+                ShopTARgv24Context context,
+                IFileServices fileServices
+            )
         {
             _context = context;
             _fileServices = fileServices;
@@ -21,20 +24,20 @@ namespace ShopTARgv24.ApplicationServices.Services
 
         public async Task<RealEstate> Create(RealEstateDto dto)
         {
-            var domain = new RealEstate
-            {
-                Id = Guid.NewGuid(),
-                Area = dto.Area,
-                Location = dto.Location,
-                RoomNumber = dto.RoomNumber,
-                BuildingType = dto.BuildingType,
-                CreatedAt = DateTime.Now,
-                ModifiedAt = DateTime.Now
-            };
+            RealEstate domain = new RealEstate();
 
-            // файлы в БД (если есть)
-            if (dto.Files != null && dto.Files.Count > 0)
+            domain.Id = Guid.NewGuid();
+            domain.Area = dto.Area;
+            domain.Location = dto.Location;
+            domain.RoomNumber = dto.RoomNumber;
+            domain.BuildingType = dto.BuildingType;
+            domain.CreatedAt = DateTime.Now;
+            domain.ModifiedAt = DateTime.Now;
+
+            if (dto.Files != null)
+            {
                 _fileServices.UploadFilesToDatabase(dto, domain);
+            }
 
             await _context.RealEstates.AddAsync(domain);
             await _context.SaveChangesAsync();
@@ -42,22 +45,11 @@ namespace ShopTARgv24.ApplicationServices.Services
             return domain;
         }
 
-        public async Task<RealEstate?> DetailAsync(Guid id)
-        {
-            // при желании можно добавить Include к изображениям
-            return await _context.RealEstates
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
-
         public async Task<RealEstate> Update(RealEstateDto dto)
         {
-            // обновляем существующую запись (а не создаём новую «пустую»)
-            var domain = await _context.RealEstates
-                .FirstOrDefaultAsync(x => x.Id == dto.Id);
+            RealEstate domain = new RealEstate();
 
-            if (domain == null)
-                return null!; // или брось исключение, если по контракту не допускается null
-
+            domain.Id = dto.Id;
             domain.Area = dto.Area;
             domain.Location = dto.Location;
             domain.RoomNumber = dto.RoomNumber;
@@ -65,27 +57,30 @@ namespace ShopTARgv24.ApplicationServices.Services
             domain.CreatedAt = dto.CreatedAt;
             domain.ModifiedAt = DateTime.Now;
 
-            if (dto.Files != null && dto.Files.Count > 0)
-                _fileServices.UploadFilesToDatabase(dto, domain);
-
             _context.RealEstates.Update(domain);
             await _context.SaveChangesAsync();
 
             return domain;
         }
 
-        public async Task<RealEstate?> Delete(Guid id)
+        public async Task<RealEstate> DetailAsync(Guid id)
         {
-            var realestate = await _context.RealEstates
+            var result = await _context.RealEstates
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (realestate == null)
-                return null;
+            return result;
+        }
 
-            _context.RealEstates.Remove(realestate);
+        public async Task<RealEstate> Delete(Guid id)
+        {
+            var result = await _context.RealEstates
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            _context.RealEstates.Remove(result);
             await _context.SaveChangesAsync();
 
-            return realestate;
+            return result;
         }
+
     }
 }
