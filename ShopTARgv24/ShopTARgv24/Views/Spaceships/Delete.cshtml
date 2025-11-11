@@ -6,7 +6,7 @@
     <h4>Spaceship</h4>
     <hr />
     <dl class="row">
-        <div class="form-group row"> 
+        <div class="form-group row">
             <label asp-for="Id" class="col-sm-2 col-form-label"></label>
             @Html.DisplayFor(Model => Model.Id)
         </div>
@@ -74,6 +74,11 @@
             @Html.DisplayFor(Model => Model.ModifiedAt)
         </div>
     </dl>
+
+    @foreach (var images in Model.ImageViewModels)
+    {
+        <partial name="_Images" model="images" />
+    }
 
     <form asp-action="DeleteConfirmation">
         <input type="hidden" asp-for="Id" />

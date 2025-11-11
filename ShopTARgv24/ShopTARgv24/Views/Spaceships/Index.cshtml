@@ -1,8 +1,8 @@
 ﻿@model IEnumerable<ShopTARgv24.Models.Spaceships.SpaceshipsIndexViewModel>
 
-    @{
-        int rowNumber = 1;
-    }
+@{
+    int rowNumber = 1;
+}
 
 <div>
     <a asp-action="create" asp-controller="spaceships" type="submit" class="btn btn-primary">Create</a>
@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(var spaceships in Model)
+            @foreach (var spaceships in Model)
             {
                 <tr>
                     <td>@rowNumber</td>
