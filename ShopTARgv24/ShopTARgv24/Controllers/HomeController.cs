@@ -12,6 +12,7 @@ namespace ShopTARgv24.Controllers
         {
             _logger = logger;
         }
+
         public IActionResult Index()
         {
             return View();
