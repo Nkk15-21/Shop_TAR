@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ShopTARgv24.ApplicationServices.Services;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
@@ -29,6 +29,13 @@ namespace ShopTARgv24
             builder.Services.AddHttpClient<IChuckNorrisServices, ChuckNorrisServices>();
 
             var app = builder.Build();
+
+            // Автоматическое применение миграций при старте приложения
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ShopTARgv24Context>();
+                dbContext.Database.Migrate();  // Применяет все миграции, если они не были применены ранее
+            }
 
             if (!app.Environment.IsDevelopment())
             {
