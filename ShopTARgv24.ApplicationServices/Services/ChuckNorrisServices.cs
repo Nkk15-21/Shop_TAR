@@ -34,7 +34,7 @@ namespace ShopTARgv24.ApplicationServices.Services
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                return jokeDto;
+                return jokeDto ?? throw new InvalidOperationException("Failed to deserialize ChuckNorrisJokeDto.");
             }
 
             

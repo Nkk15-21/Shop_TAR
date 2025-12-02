@@ -182,7 +182,9 @@ namespace ShopTARgv24.Controllers
                     Id = y.Id,
                     ImageData = y.ImageData,
                     ImageTitle = y.ImageTitle,
-                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
+                    Image = y.ImageData != null 
+                        ? string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData)) 
+                        : string.Empty
                 }).ToArrayAsync();
 
             var vm = new RealEstateDetailsViewModel();
