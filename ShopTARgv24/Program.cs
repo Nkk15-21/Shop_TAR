@@ -26,7 +26,9 @@ namespace ShopTARgv24
             builder.Services.AddHttpClient<ICocktailService, CocktailService>();
 
             builder.Services.AddDbContext<ShopTARgv24Context>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 
             var app = builder.Build();
 
