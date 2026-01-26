@@ -14,8 +14,9 @@ namespace ShopTARgv24.Data
         public DbSet<FileToApi> FileToApis { get; set; }
         public DbSet<RealEstate> RealEstate { get; set; }
         public DbSet<FileToDatabase> FileToDatabases { get; set; }
+        public DbSet<Kindergarten> Kindergartens { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
