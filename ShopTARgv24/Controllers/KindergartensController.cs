@@ -1,86 +1,52 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShopTARgv24.Core.Domain;
+using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
+using System;
+using System.Threading.Tasks;
 
 namespace ShopTARgv24.Controllers
 {
     public class KindergartensController : Controller
     {
         private readonly IKindergartenServices _kindergartenServices;
+        private readonly IFileServices _fileServices;
 
-        // Конструктор: просим программу дать нам сервис для работы
-        public KindergartensController(IKindergartenServices kindergartenServices)
+        public KindergartensController(IKindergartenServices kindergartenServices, IFileServices fileServices)
         {
             _kindergartenServices = kindergartenServices;
+            _fileServices = fileServices;
         }
 
-        // 1. Список всех садиков (Главная страница раздела)
-        public IActionResult Index()
-        {
-            // Тут мы позже добавим получение списка из базы
-            return View();
-        }
-
-        // 2. Страница создания (просто открывает форму)
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // 3. Сохранение нового садике (срабатывает при нажатии кнопки "Save")
         [HttpPost]
-        public async Task<IActionResult> Create(Kindergarten vm)
+        public async Task<IActionResult> Create(KindergartenDto dto)
         {
-            var result = await _kindergartenServices.Create(vm);
-
-            if (result == null)
+            var domain = new Kindergarten()
             {
-                return RedirectToAction(nameof(Index));
+                Id = Guid.NewGuid(),
+                GroupName = dto.GroupName,
+                ChildrenCount = dto.ChildrenCount,
+                KindergartenName = dto.KindergartenName,
+                TeacherName = dto.TeacherName,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            };
+
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, domain);
             }
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        // 1. Открываем страницу редактирования
-        [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
-        {
-            var kindergarten = await _kindergartenServices.GetAsync(id);
-
-            if (kindergarten == null)
-            {
-                return NotFound();
-            }
-
-            return View(kindergarten);
-        }
-
-        // 2. Сохраняем изменения
-        [HttpPost]
-        public async Task<IActionResult> Edit(Kindergarten vm)
-        {
-            var result = await _kindergartenServices.Update(vm);
-
-            if (result == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
+            var result = await _kindergartenServices.Create(domain);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteImage(Guid id)
         {
-            var result = await _kindergartenServices.Delete(id);
-
-            if (result == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            return RedirectToAction(nameof(Index));
+            var result = await _fileServices.RemoveImageFromDatabase(id);
+            if (result == null) return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index)); // Или вернись на страницу Edit
         }
     }
 }
