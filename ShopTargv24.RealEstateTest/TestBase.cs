@@ -1,21 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ShopTARgv24.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using ZendeskApi_v2.Requests;
-using ShopTARgv24.Core.ServiceInterface;
-using ShopTARgv24.ApplicationServices.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ShopTARgv24.ApplicationServices.Services;
+using ShopTARgv24.Core.ServiceInterface;
+using ShopTARgv24.Data;
 using ShopTARgv24.RealEstateTest.Mock;
-using System.Linq;
-using ShopTARgv24.Core.Domain;
+using ZendeskApi_v2.Requests;
 
 namespace ShopTARgv24.RealEstateTest
 {
     public abstract class TestBase
     {
         protected IServiceProvider serviceProvider { get; set; }
-
         protected TestBase()
         {
             var services = new ServiceCollection();
@@ -29,7 +26,7 @@ namespace ShopTARgv24.RealEstateTest
             services.AddScoped<IFileServices, FileServices>();
             services.AddScoped<IHostEnvironment, MockHostEnvironment>();
 
-            services.AddDbContext<ShopTARgv24Context>(x =>
+            services.AddDbContext<ShopContext>(x =>
             {
                 x.UseInMemoryDatabase("TestDb");
                 x.ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
@@ -46,6 +43,7 @@ namespace ShopTARgv24.RealEstateTest
                 .Where(t => macroBaseType.IsAssignableFrom(t)
                 && !t.IsInterface && !t.IsAbstract);
         }
+
         protected T Svc<T>()
         {
             return serviceProvider.GetService<T>();
@@ -53,7 +51,7 @@ namespace ShopTARgv24.RealEstateTest
 
         public void Dispose()
         {
-
+               
         }
     }
 }

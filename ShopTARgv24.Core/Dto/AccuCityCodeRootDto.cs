@@ -1,11 +1,6 @@
 ﻿namespace ShopTARgv24.Core.Dto
 {
-    public class AccuCityCodeRootDto
-    {
-        public Class1[] Property1 { get; set; }
-    }
-
-    public class Class1
+    public class Rootobject
     {
         public int Version { get; set; }
         public string Key { get; set; }

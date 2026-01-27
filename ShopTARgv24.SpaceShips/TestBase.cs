@@ -1,36 +1,57 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ShopTARgv24.ApplicationServices.Services;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
-using ShopTARgv24.RealEstateTest.Mock;
+using ShopTARgv24.SpaceshipTest.Mock;
+using ZendeskApi_v2.Requests;
 
-namespace ShopTARgv24.SpaceShipsTest
+namespace ShopTARgv24.SpaceshipTest
 {
-    public class TestBase
+    public abstract class TestBase
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public TestBase()
+        protected IServiceProvider serviceProvider { get; set; }
+        protected TestBase()
         {
             var services = new ServiceCollection();
+            SetupServices(services);
+            serviceProvider = services.BuildServiceProvider();
+        }
 
-            services.AddDbContext<ShopTARgv24Context>(options =>
-                options.UseInMemoryDatabase("SpaceShipsTestDb"));
-
-            services.AddSingleton<IHostEnvironment, MockHostEnvironment>();
-
-            services.AddScoped<IFileServices, FileServices>();
-
+        public virtual void SetupServices(IServiceCollection services)
+        {
             services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
+            services.AddScoped<IFileServices, FileServices>();
+            services.AddScoped<IHostEnvironment, MockHostEnvironment>();
 
-            _serviceProvider = services.BuildServiceProvider();
+            services.AddDbContext<ShopContext>(x =>
+            {
+                x.UseInMemoryDatabase("TestDb");
+                x.ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+            });
+
+            RegisterMacros(services);
+        }
+
+        private void RegisterMacros(IServiceCollection services)
+        {
+            var macroBaseType = typeof(IMacros);
+
+            var macros = macroBaseType.Assembly.GetTypes()
+                .Where(t => macroBaseType.IsAssignableFrom(t)
+                && !t.IsInterface && !t.IsAbstract);
         }
 
         protected T Svc<T>()
         {
-            return _serviceProvider.GetRequiredService<T>();
+            return serviceProvider.GetService<T>();
+        }
+
+        public void Dispose()
+        {
+               
         }
     }
 }

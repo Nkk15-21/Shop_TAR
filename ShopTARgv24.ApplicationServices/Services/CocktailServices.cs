@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ShopTARgv24.Core.ServiceInterface;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ShopTARgv24.Core.ServiceInterface;
 
 namespace ShopTARgv24.ApplicationServices.Services
 {
@@ -99,7 +99,6 @@ namespace ShopTARgv24.ApplicationServices.Services
             PropertyNameCaseInsensitive = true
         };
 
-        // ↓ минимальная модель под ответ API
         private class Root { public List<Drink>? drinks { get; set; } }
         private class Drink
         {

@@ -3,30 +3,33 @@ using ShopTARgv24.Core.Domain;
 using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ShopTARgv24.ApplicationServices.Services
 {
     public class SpaceshipsServices : ISpaceshipsServices
     {
-        private readonly ShopTARgv24Context _context;
+        private readonly ShopContext _context;
         private readonly IFileServices _fileServices;
 
+        // teha constructor
         public SpaceshipsServices
             (
-                ShopTARgv24Context context,
+                ShopContext context,
                 IFileServices fileServices
             )
         {
             _context = context;
-           _fileServices = fileServices;
+            _fileServices = fileServices;
         }
-
         public async Task<Spaceship> Create(SpaceshipDto dto)
         {
             Spaceship spaceship = new Spaceship();
 
-            
             spaceship.Id = Guid.NewGuid();
             spaceship.Name = dto.Name;
             spaceship.TypeName = dto.TypeName;
@@ -37,9 +40,10 @@ namespace ShopTARgv24.ApplicationServices.Services
             spaceship.InnerVolume = dto.InnerVolume;
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
+
             _fileServices.FilesToApi(dto, spaceship);
 
-            await _context.Spaceships.AddAsync(spaceship);
+            await _context.Spaceships.AddAsync( spaceship );
             await _context.SaveChangesAsync();
 
             return spaceship;
@@ -48,12 +52,11 @@ namespace ShopTARgv24.ApplicationServices.Services
         public async Task<Spaceship> DetailAsync(Guid id)
         {
             var result = await _context.Spaceships
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync( x => x.Id == id );
 
             return result;
         }
-
-        public async Task<Spaceship> Delete(Guid id)
+        public async Task <Spaceship>Delete(Guid id)
         {
             var spaceship = await _context.Spaceships
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -64,16 +67,17 @@ namespace ShopTARgv24.ApplicationServices.Services
                 {
                     Id = y.Id,
                     SpaceshipId = y.SpaceshipId,
-                    ExistingFilePath = y.ExistingFilePath
+                    ExistingFilePath = y.ExistingFilePath,
                 }).ToArrayAsync();
 
             await _fileServices.RemoveImagesFromApi(images);
-            _ = _context.Spaceships.Remove(spaceship);
+
+
+            _context.Spaceships.Remove(spaceship);
             await _context.SaveChangesAsync();
 
             return spaceship;
         }
-
         public async Task<Spaceship> Update(SpaceshipDto dto)
         {
             Spaceship domain = new();
@@ -88,6 +92,7 @@ namespace ShopTARgv24.ApplicationServices.Services
             domain.InnerVolume = dto.InnerVolume;
             domain.CreatedAt = dto.CreatedAt;
             domain.ModifiedAt = DateTime.Now;
+
             _fileServices.FilesToApi(dto, domain);
 
             _context.Spaceships.Update(domain);

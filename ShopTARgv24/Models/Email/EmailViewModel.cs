@@ -1,4 +1,4 @@
-namespace ShopTARgv24.Models.Email
+﻿namespace ShopTARgv24.Models.Email
 {
     public class EmailViewModel
     {

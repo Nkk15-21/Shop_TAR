@@ -66,4 +66,5 @@
         public string IconPhrase { get; set; }
         public bool HasPrecipitation { get; set; }
     }
+
 }

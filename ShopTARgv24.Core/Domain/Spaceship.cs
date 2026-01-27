@@ -1,17 +1,22 @@
-﻿namespace ShopTARgv24.Core.Domain
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ShopTARgv24.Core.Domain
 {
     public class Spaceship
     {
-        public Guid? Id { get; set; }
-        public string? Name { get; set; }
-        public string? TypeName { get; set; }
-        public DateTime? BuiltDate { get; set; }
-        public int? Crew { get; set; }
-        public int? EnginePower { get; set; }
-        public int? Passengers { get; set; }
-        public int? InnerVolume { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? ModifiedAt { get; set; }
+    public Guid? Id { get; set; }
+    public string? Name { get; set; }
+    public string? TypeName { get; set; }
+    public DateTime? BuiltDate { get; set; }
+    public int? Crew { get; set; }
+    public int? EnginePower { get; set; }
+    public int? Passengers { get; set; }
+    public int? InnerVolume { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
     }
 }

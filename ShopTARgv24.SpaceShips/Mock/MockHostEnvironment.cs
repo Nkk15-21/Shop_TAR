@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace ShopTARgv24.SpaceShipsTest.Mock
+namespace ShopTARgv24.SpaceshipTest.Mock
 {
     public class MockHostEnvironment : IHostEnvironment
     {

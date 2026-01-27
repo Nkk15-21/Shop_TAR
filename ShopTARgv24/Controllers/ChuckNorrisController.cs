@@ -1,36 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShopTARgv24.Core.ServiceInterface;
-using ShopTARgv24.Models.ChuckNorris;
+using ShopTARgv24.ApplicationServices.Services;
 using System.Threading.Tasks;
 
 namespace ShopTARgv24.Controllers
 {
     public class ChuckNorrisController : Controller
     {
-        private readonly IChuckNorrisServices _chuckNorrisServices;
+        private readonly ChuckNorrisServices _jokeService;
 
-        public ChuckNorrisController(IChuckNorrisServices chuckNorrisServices)
+        public ChuckNorrisController(ChuckNorrisServices jokeService)
         {
-            _chuckNorrisServices = chuckNorrisServices;
+            _jokeService = jokeService;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var jokeDto = await _chuckNorrisServices.GetRandomJoke();
+            return View();
+        }
 
-            var viewModel = new ChuckNorrisViewModel();
-
-            if (jokeDto == null)
-            {
-                viewModel.Joke = "Не удалось загрузить шутку. Чак Норрис не в настроении.";
-            }
-            else
-            {
-                viewModel.Joke = jokeDto.Value;
-                viewModel.IconUrl = jokeDto.IconUrl;
-            }
-
-            return View(viewModel);
+        [HttpGet]
+        public async Task<IActionResult> GetRandomJoke()
+        {
+            var joke = await _jokeService.GetRandomJokeAsync();
+            return Json(new { joke });
         }
     }
 }

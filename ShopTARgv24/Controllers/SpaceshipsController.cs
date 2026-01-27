@@ -3,21 +3,22 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
-using ShopTARgv24.Data;
 using ShopTARgv24.Models.Spaceships;
+using ShopTARgv24.Data;
 
 
 namespace ShopTARgv24.Controllers
 {
     public class SpaceshipsController : Controller
     {
-        private readonly ShopTARgv24Context _context;
+        private readonly ShopContext _context;
         private readonly ISpaceshipsServices _spaceshipsServices;
         private readonly IFileServices _fileServices;
 
+
         public SpaceshipsController
             (
-                ShopTARgv24Context context,
+                ShopContext context,
                 ISpaceshipsServices spaceshipsServices,
                 IFileServices fileServices
             )
@@ -36,20 +37,20 @@ namespace ShopTARgv24.Controllers
                     Name = x.Name,
                     BuiltDate = x.BuiltDate,
                     TypeName = x.TypeName,
-                    Crew = x.Crew
+                    Crew = x.Crew,
                 });
+
 
             return View(result);
         }
+
 
         [HttpGet]
         public IActionResult Create()
         {
             SpaceshipCreateUpdateViewModel result = new();
-
             return View("CreateUpdate", result);
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(SpaceshipCreateUpdateViewModel vm)
         {
@@ -66,7 +67,7 @@ namespace ShopTARgv24.Controllers
                 CreatedAt = vm.CreatedAt,
                 ModifiedAt = vm.ModifiedAt,
                 Files = vm.Files,
-                FileToApiDtos = vm.Image
+                FileToApiDtos = vm.Images
                     .Select(x => new FileToApiDto
                     {
                         Id = x.ImageId,
@@ -115,29 +116,32 @@ namespace ShopTARgv24.Controllers
             vm.InnerVolume = spaceship.InnerVolume;
             vm.CreatedAt = spaceship.CreatedAt;
             vm.ModifiedAt = spaceship.ModifiedAt;
-            vm.ImageViewModels.AddRange(images);
+            vm.Image.AddRange(images);
+
+
             return View(vm);
         }
-
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmation(Guid id)
         {
-            var spaceship = await _spaceshipsServices.Delete(id);
 
-            if (spaceship == null)
+            var deleted = await _spaceshipsServices.Delete(id);
+
+            if (deleted == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
+
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public async Task <IActionResult> Update(Guid id)
+        public async Task<IActionResult> Update(Guid id)
         {
-            var spaceship = await _spaceshipsServices.DetailAsync(id);
+            var update = await _spaceshipsServices.DetailAsync(id);
 
-            if (spaceship == null)
+            if (update == null)
             {
                 return NotFound();
             }
@@ -152,17 +156,18 @@ namespace ShopTARgv24.Controllers
 
             var vm = new SpaceshipCreateUpdateViewModel();
 
-            vm.Id = spaceship.Id;
-            vm.Name = spaceship.Name;
-            vm.TypeName = spaceship.TypeName;
-            vm.BuiltDate = spaceship.BuiltDate;
-            vm.Crew = spaceship.Crew;
-            vm.EnginePower = spaceship.EnginePower;
-            vm.Passengers = spaceship.Passengers;
-            vm.InnerVolume = spaceship.InnerVolume;
-            vm.CreatedAt = spaceship.CreatedAt;
-            vm.ModifiedAt = spaceship.ModifiedAt;
-            vm.Image.AddRange(images);
+            vm.Id = update.Id;
+            vm.Name = update.Name;
+            vm.TypeName = update.TypeName;
+            vm.BuiltDate = update.BuiltDate;
+            vm.Crew = update.Crew;
+            vm.EnginePower = update.EnginePower;
+            vm.Passengers = update.Passengers;
+            vm.InnerVolume = update.InnerVolume;
+            vm.CreatedAt = update.CreatedAt;
+            vm.ModifiedAt = update.ModifiedAt;
+            vm.Images.AddRange(images);
+
 
             return View("CreateUpdate", vm);
         }
@@ -183,13 +188,14 @@ namespace ShopTARgv24.Controllers
                 CreatedAt = vm.CreatedAt,
                 ModifiedAt = vm.ModifiedAt,
                 Files = vm.Files,
-                FileToApiDtos = vm.Image
+                FileToApiDtos = vm.Images
                     .Select(x => new FileToApiDto
                     {
                         Id = x.ImageId,
                         ExistingFilePath = x.FilePath,
                         SpaceshipId = x.SpaceshipId
                     }).ToArray()
+
             };
 
             var result = await _spaceshipsServices.Update(dto);
@@ -199,7 +205,7 @@ namespace ShopTARgv24.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index), vm);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -236,26 +242,31 @@ namespace ShopTARgv24.Controllers
 
             return View(vm);
         }
-
         [HttpPost]
         public async Task<IActionResult> RemoveImage(ImageViewModel vm)
         {
-            //peate läbi viewModeli edastama Id dto-sse
+            //peate läbi viewModeli edastama Id dto -sse
+            //tuleb esile kustuda removeImageFromAppi meetod
+            //kui image on null, siis returib Index vaatele
+
+            // 1) Собираем dto из viewModel
             var dto = new FileToApiDto()
             {
-                Id = vm.ImageId
+                Id = vm.ImageId,
+                // SpaceshipId = vm.SpaceshipId,
+                // ExistingFilePath = vm.FilePath
             };
 
-            //tuleb esile kutsuda removeImageFromApi meetod
+            // 2) Вызываем сервис удаления
             var image = await _fileServices.RemoveImageFromApi(dto);
 
-            //kui image on null, siis returnib Index vaatele
+            // 3) Если картинка не найдена → возврат к списку
             if (image == null)
-            {
                 return RedirectToAction(nameof(Index));
-            }
 
+            // 4) Если удалена успешно → тоже возврат к списку
             return RedirectToAction(nameof(Index));
         }
     }
+
 }

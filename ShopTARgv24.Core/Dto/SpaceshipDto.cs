@@ -1,4 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using ShopTARgv24.Core.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ShopTARgv24.Core.Dto
 {
@@ -12,13 +18,9 @@ namespace ShopTARgv24.Core.Dto
         public int? EnginePower { get; set; }
         public int? Passengers { get; set; }
         public int? InnerVolume { get; set; }
-
-        //Tuleb teha muutuja Files ja see peab olema listis
-        public List<IFormFile> Files { get; set; }
-
+        public List <IFormFile> Files { get; set; }
         public IEnumerable<FileToApiDto> FileToApiDtos { get; set; }
-            = new List<FileToApiDto>();
-
+        = new List<FileToApiDto>();
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
