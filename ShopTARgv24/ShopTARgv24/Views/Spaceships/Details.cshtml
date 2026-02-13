@@ -1,6 +1,6 @@
 ﻿@model ShopTARgv24.Models.Spaceships.SpaceshipDetailsViewModel
 
-<h1>Details</h1>
+<h1 class="text-center">Details</h1>
 
 <div>
     <h4>Spaceship</h4>
@@ -74,11 +74,5 @@
             @Html.DisplayFor(Model => Model.ModifiedAt)
         </div>
     </dl>
-
-@foreach (var images in Model.Images)
-{
-    <partial name="_Images" model="images" />
-}
-
-    <a asp-action="index" asp-controller="spaceships" class="btn btn-primary">Back</a>
+    <a asp-action="Index" asp-controller="spaceships" class="btn btn-secondary m-1">Back</a>
 </div>

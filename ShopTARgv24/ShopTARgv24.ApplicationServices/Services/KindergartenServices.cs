@@ -3,9 +3,6 @@ using ShopTARgv24.Core.Domain;
 using ShopTARgv24.Core.Dto;
 using ShopTARgv24.Core.ServiceInterface;
 using ShopTARgv24.Data;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ShopTARgv24.ApplicationServices.Services
 {
@@ -14,10 +11,11 @@ namespace ShopTARgv24.ApplicationServices.Services
         private readonly ShopTARgv24Context _context;
         private readonly IFileServices _fileServices;
 
-        public KindergartenServices(
-            ShopTARgv24Context context,
-            IFileServices fileServices
-        )
+        public KindergartenServices
+            (
+                ShopTARgv24Context context,
+                IFileServices fileServices
+            )
         {
             _context = context;
             _fileServices = fileServices;
@@ -25,18 +23,17 @@ namespace ShopTARgv24.ApplicationServices.Services
 
         public async Task<Kindergarten> Create(KindergartenDto dto)
         {
-            var kindergarten = new Kindergarten
-            {
-                KindergartenId = Guid.NewGuid(),
-                GroupName = dto.GroupName,
-                ChildrenCount = dto.ChildrenCount,
-                KindergartenName = dto.KindergartenName,
-                TeacherName = dto.TeacherName,
-                CreatedAt = DateTime.Now,
-                ModifiedAt = DateTime.Now
-            };
+            Kindergarten kindergarten = new Kindergarten();
 
-            if (dto.Files != null && dto.Files.Count > 0)
+            kindergarten.Id = Guid.NewGuid();
+            kindergarten.GroupName = dto.GroupName;
+            kindergarten.ChildrenCount = dto.ChildrenCount;
+            kindergarten.KindergartenName = dto.KindergartenName;
+            kindergarten.TeacherName = dto.TeacherName;
+            kindergarten.CreatedAt = DateTime.Now;
+            kindergarten.UpdatedAt = DateTime.Now;
+
+            if (dto.Files != null)
             {
                 _fileServices.UploadFilesToDatabase(dto, kindergarten);
             }
@@ -50,37 +47,24 @@ namespace ShopTARgv24.ApplicationServices.Services
         public async Task<Kindergarten> DetailAsync(Guid id)
         {
             var result = await _context.Kindergartens
-                .Include(k => k.Files) // Включаем связанные файлы для детального просмотра
-                .FirstOrDefaultAsync(x => x.KindergartenId == id);
+            .FirstOrDefaultAsync(x => x.Id == id);
 
             return result;
         }
-
         public async Task<Kindergarten> Update(KindergartenDto dto)
         {
-            // 1. Находим существующую запись в базе данных
-            var domain = await _context.Kindergartens
-                .FirstOrDefaultAsync(x => x.KindergartenId == dto.KindergartenId);
+            Kindergarten domain = new();
 
-            if (domain == null)
-            {
-                return null;
-            }
-
-            // 2. Обновляем её свойства
+            domain.Id = dto.Id;
             domain.GroupName = dto.GroupName;
             domain.ChildrenCount = dto.ChildrenCount;
             domain.KindergartenName = dto.KindergartenName;
             domain.TeacherName = dto.TeacherName;
-            domain.ModifiedAt = DateTime.Now;
+            domain.CreatedAt = dto.CreatedAt;
+            domain.UpdatedAt = DateTime.Now;
+            _fileServices.UploadFilesToDatabase(dto, domain);
 
-            // 3. Загружаем новые файлы, если они были добавлены
-            if (dto.Files != null && dto.Files.Count > 0)
-            {
-                _fileServices.UploadFilesToDatabase(dto, domain);
-            }
-
-            // 4. Сохраняем все изменения одной транзакцией
+            _context.Kindergartens.Update(domain);
             await _context.SaveChangesAsync();
 
             return domain;
@@ -89,9 +73,9 @@ namespace ShopTARgv24.ApplicationServices.Services
         public async Task<Kindergarten> Delete(Guid id)
         {
             var kindergarten = await _context.Kindergartens
-                .FirstOrDefaultAsync(x => x.KindergartenId == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            var images = await _context.FileToDatabases
+            var images = await _context.FileToDatabase
                 .Where(x => x.KindergartenId == id)
                 .Select(y => new FileToDatabaseDto
                 {

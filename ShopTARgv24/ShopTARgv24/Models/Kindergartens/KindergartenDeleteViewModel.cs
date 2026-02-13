@@ -1,15 +1,15 @@
-﻿namespace ShopTARgv24.Models.Kindergarten
+﻿namespace ShopTARgv24.Models.Kindergartens
 {
     public class KindergartenDeleteViewModel
     {
-        public Guid? KindergartenId { get; set; }
+        public Guid? Id { get; set; }
         public string? GroupName { get; set; }
         public int? ChildrenCount { get; set; }
         public string? KindergartenName { get; set; }
         public string? TeacherName { get; set; }
-        public List<ImageViewModel> Images { get; set; }
-            = new List<ImageViewModel>();
+        public List<KindergartenImageViewModel> Image { get; set; }
+            = new List<KindergartenImageViewModel>();
         public DateTime? CreatedAt { get; set; }
-        public DateTime? ModifiedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }
