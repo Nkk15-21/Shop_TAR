@@ -14,8 +14,8 @@ namespace ShopTARgv24
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
             builder.Services.AddScoped<IFileServices, FileServices>();
+            builder.Services.AddScoped<IKindergartenServices, KindergartenServices>();
 
 
             builder.Services.AddDbContext<ShopTARgv24Context>(options =>
@@ -35,6 +35,8 @@ namespace ShopTARgv24
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseStaticFiles();
 
             app.MapStaticAssets();
             app.MapControllerRoute(
